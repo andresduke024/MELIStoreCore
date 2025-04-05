@@ -1,0 +1,15 @@
+{
+  "originHash" : "4c40031955ea0be44a8f628c59e2fec71912e9a6c58d15de57afc1410024574b",
+  "pins" : [
+    {
+      "identity" : "swift-dependency-injector",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/andresduke024/swift-dependency-injector",
+      "state" : {
+        "revision" : "c13d93468689ac92ec1ac856ce94d73f242272cb",
+        "version" : "2.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}
