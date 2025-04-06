@@ -1,2 +1,10 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+public struct CoreModule: ModuleProtocol {
+    
+    public static let shared = CoreModule()
+    
+    private init() {}
+    
+    public var dependenciesContainer: any DependenciesContainer {
+        CoreDependenciesContainer()
+    }
+}
