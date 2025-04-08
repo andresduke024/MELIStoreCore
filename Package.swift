@@ -24,7 +24,10 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftDependencyInjector", package: "swift-dependency-injector"),
                 .product(name: "Alamofire", package: "Alamofire")
-            ]
+            ],
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ],
         ),
         .testTarget(
             name: "MELIStoreCoreTests",
