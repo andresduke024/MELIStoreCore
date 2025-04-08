@@ -11,6 +11,7 @@ import SwiftDependencyInjector
 public protocol HTTPManagerProtocol: Sendable {    
     func post<T: Decodable & Sendable>(
         endpoint: EndpointProtocol,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
         requiresAuthentication: Bool,
         body: RequestModelProtocol?,
         requestErrorMapper: ((RequestError) -> Error)?
@@ -18,6 +19,7 @@ public protocol HTTPManagerProtocol: Sendable {
     
     func get<T: Decodable & Sendable>(
         endpoint: EndpointProtocol,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
         requiresAuthentication: Bool,
         queryParams: QueryParamsModelProtocol?,
         requestErrorMapper: ((RequestError) -> Error)?

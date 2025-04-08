@@ -1,4 +1,11 @@
-public struct CoreModule: ModuleProtocol {
+//
+//  CoreModule.swift
+//  MELIStoreCore
+//
+//  Created by Andres Duque on 8/04/25.
+//
+
+public struct CoreModule: BasicModuleProtocol {
     
     public static let shared = CoreModule()
     

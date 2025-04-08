@@ -7,5 +7,7 @@
 
 public struct CoreConstants {
     public static let maxExecutionAttempts = 3
+    
+    public static let pathSeparator = "/"
 }
 

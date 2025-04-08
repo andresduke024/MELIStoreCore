@@ -19,6 +19,7 @@ struct HTTPManager: HTTPManagerProtocol {
     
     func post<T>(
         endpoint: any EndpointProtocol,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
         requiresAuthentication: Bool,
         body: RequestModelProtocol?,
         requestErrorMapper: ((RequestError) -> Error)?
@@ -27,6 +28,7 @@ struct HTTPManager: HTTPManagerProtocol {
             endpoint: endpoint,
             method: .post,
             encoding: JSONEncoding.default,
+            extraHeaders: extraHeaders,
             requiresAuthentication: requiresAuthentication,
             body: body,
             requestErrorMapper: requestErrorMapper
@@ -35,6 +37,7 @@ struct HTTPManager: HTTPManagerProtocol {
 
     func get<T>(
         endpoint: any EndpointProtocol,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
         requiresAuthentication: Bool,
         queryParams: QueryParamsModelProtocol?,
         requestErrorMapper: ((RequestError) -> Error)?
@@ -43,6 +46,7 @@ struct HTTPManager: HTTPManagerProtocol {
             endpoint: endpoint,
             method: .get,
             encoding: URLEncoding.queryString,
+            extraHeaders: extraHeaders,
             requiresAuthentication: requiresAuthentication,
             queryParams: queryParams,
             requestErrorMapper: requestErrorMapper
@@ -53,18 +57,26 @@ struct HTTPManager: HTTPManagerProtocol {
         endpoint: EndpointProtocol,
         method: HTTPMethod,
         encoding: any ParameterEncoding,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
         requiresAuthentication: Bool,
         body: RequestModelProtocol? = nil,
         queryParams: QueryParamsModelProtocol? = nil,
         requestErrorMapper: ((RequestError) -> Error)?
     ) async throws -> T {
         do {
+            let headers = await createHeaders(
+                requiresAuthentication: requiresAuthentication,
+                extraHeaders: extraHeaders
+            )
+            
+            let service = createServiceURL(endpoint)
+            
             return try await performRequest(
-                service: environmentValues.get(.baseURL) + "\(endpoint.api)/\(endpoint.path)",
+                service: service,
                 method: method,
                 queryParameters: queryParams?.transform(),
                 encoding: encoding,
-                headers: createHeaders(requiresAuthentication: requiresAuthentication)
+                headers: headers
             )
         } catch let error as RequestError {
             guard let requestErrorMapper else { throw error }
@@ -109,22 +121,39 @@ struct HTTPManager: HTTPManagerProtocol {
         }
     }
     
+    private func createServiceURL(_ endpoint: EndpointProtocol) -> String {
+        environmentValues.get(.baseURL)
+            + "\(endpoint.api)\(CoreConstants.pathSeparator)\(endpoint.path)"
+    }
+    
     private func createHeaders(
-        requiresAuthentication: Bool
-    ) -> [HTTPHeader] {
-        var headers: [HTTPHeader] = []
-        
-        if !requiresAuthentication { return headers }
-        
-        let token: String = environmentValues.get(.accessToken)
-        
-        let authorization = HTTPHeader(
-            name: "Authorization",
-            value: "Bearer \(token)"
+        requiresAuthentication: Bool,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?
+    ) async -> [HTTPHeader] {
+        let builder = await createHeadersBuilder(
+            requiresAuthentication: requiresAuthentication,
+            extraHeaders: extraHeaders
         )
         
-        headers.append(authorization)
+        let headers = builder.build().map {
+            HTTPHeader(name: $0.key, value: $0.value)
+        }
         
         return headers
+    }
+    
+    private func createHeadersBuilder(
+        requiresAuthentication: Bool,
+        extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?
+    ) async -> HeadersBuilder {
+        var builder = HeadersBuilder()
+        
+        if let extraHeaders {
+            builder = await extraHeaders(builder)
+        }
+        
+        if !requiresAuthentication { return builder }
+        
+        return builder.addAuthorization()
     }
 }
