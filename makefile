@@ -2,8 +2,8 @@
 
 default: setup
 
-setup: swiftlint precommit
-	@echo "✅ Entorno listo"
+setup: swiftlint precommit prepush
+	@echo "✅ Entorno completamente configurado"
 
 swiftlint:
 	@echo "🔍 Verificando SwiftLint..."
@@ -24,3 +24,15 @@ precommit:
 	fi
 	@echo "🔧 Configurando hooks de pre-commit..."
 	@pre-commit install
+
+prepush:
+	@echo "🔧 Instalando hook de pre-push..."
+	@mkdir -p .git/hooks
+	@cp scripts/pre-push .git/hooks/pre-push
+	@chmod +x .git/hooks/pre-push
+	@echo "✅ Hook de pre-push instalado correctamente"
+
+
+lint-fix:
+	@echo "🛠 Corrigiendo errores con SwiftLint..."
+	@swiftlint --fix --config .swiftlint.yml
