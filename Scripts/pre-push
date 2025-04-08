@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "🚀 Ejecutando hook de pre-push..."
+
+echo "🔍 Ejecutando pre-commit sobre todos los archivos..."
+if ! pre-commit run --all-files; then
+  echo "❌ pre-commit ha fallado. Corrige los errores antes de hacer push."
+  exit 1
+fi
+
+echo "🧪 Ejecutando tests con 'swift test'..."
+if ! swift test; then
+  echo "❌ Los tests han fallado. Revisa antes de hacer push."
+  exit 1
+fi
+
+echo "✅ Todo listo. ¡Push aprobado!"
+exit 0

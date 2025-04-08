@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: swiftlint
+        name: SwiftLint
+        entry: swiftlint --config .swiftlint.yml
+        language: system
+        types: [swift]
+
