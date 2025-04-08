@@ -8,7 +8,7 @@
 import Foundation
 import SwiftDependencyInjector
 
-struct EnvironmentValues: EnvironmentValuesProtocol {
+struct EnvironmentValuesReader: EnvironmentValuesProtocol {
     
     func get<T>(_ key: EnvironmentValueType) -> T {
         let environment = readEnvironment()

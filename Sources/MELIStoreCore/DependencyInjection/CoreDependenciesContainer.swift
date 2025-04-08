@@ -12,7 +12,7 @@ struct CoreDependenciesContainer: DependenciesContainer {
     public func registerDependencies() {
         // Environment
         
-        Injector.global.register(EnvironmentValuesProtocol.self) { EnvironmentValues() }
+        Injector.global.register(EnvironmentValuesProtocol.self) { EnvironmentValuesReader() }
         
         // Utils
         Injector.global.register(AttemptsManagerProtocol.self) { AttemptsManager() }

@@ -12,12 +12,14 @@ public protocol HTTPManagerProtocol: Sendable {
     func post<T: Decodable & Sendable>(
         endpoint: EndpointProtocol,
         requiresAuthentication: Bool,
-        body: RequestModelProtocol?
+        body: RequestModelProtocol?,
+        requestErrorMapper: ((RequestError) -> Error)?
     ) async throws -> T
     
     func get<T: Decodable & Sendable>(
         endpoint: EndpointProtocol,
         requiresAuthentication: Bool,
-        queryParams: QueryParamsModelProtocol?
+        queryParams: QueryParamsModelProtocol?,
+        requestErrorMapper: ((RequestError) -> Error)?
     ) async throws -> T
 }

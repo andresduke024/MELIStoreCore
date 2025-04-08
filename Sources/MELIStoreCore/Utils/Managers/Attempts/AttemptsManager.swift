@@ -15,13 +15,24 @@ actor AttemptsManager: AttemptsManagerProtocol {
         do {
             let result = try await block()
             
-            attempts = 0
+            restore()
             return result
         } catch {
-            guard attempts < maxAttempts else { throw error }
+            increment()
             
-            attempts += 1
-            return try await execute(maxAttempts: maxAttempts, block)
+            guard attempts < maxAttempts else {
+                restore()
+                throw error
+            }
+            
+            return try await execute(
+                maxAttempts: maxAttempts,
+                block
+            )
         }
     }
+    
+    private func increment() { attempts += 1 }
+    
+    private func restore() { attempts = 0 }
 }
