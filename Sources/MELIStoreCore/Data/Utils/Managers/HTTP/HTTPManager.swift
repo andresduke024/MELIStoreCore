@@ -122,8 +122,10 @@ struct HTTPManager: HTTPManagerProtocol {
     }
     
     private func createServiceURL(_ endpoint: EndpointProtocol) -> String {
-        environmentValues.get(.baseURL)
+        let url = environmentValues.get(.baseURL)
             + "\(endpoint.api)\(CoreConstants.pathSeparator)\(endpoint.path)"
+        
+        return url.replacingOccurrences(of: "//", with: CoreConstants.pathSeparator)
     }
     
     private func createHeaders(
