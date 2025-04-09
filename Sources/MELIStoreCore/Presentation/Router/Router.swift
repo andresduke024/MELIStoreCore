@@ -38,7 +38,7 @@ public final class Router: ObservableObject {
     /// Pila de navegación utilizada por `NavigationStack`.
     @Published
     public var navPath: NavigationPath
-    
+        
     /// Inicializa una nueva instancia del enrutador.
     public init() {
         self.navPath = NavigationPath()
