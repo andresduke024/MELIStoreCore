@@ -9,14 +9,31 @@ import Foundation
 import Alamofire
 import SwiftDependencyInjector
 
+/// `HTTPManager` es la implementación por defecto del protocolo `HTTPManagerProtocol`.
+/// Se encarga de realizar llamadas HTTP de tipo `GET` y `POST`, utilizando Alamofire
+/// como motor de red.
+///
+/// Incorpora lógica para construir headers dinámicamente, codificar el cuerpo o
+/// parámetros de la solicitud, y mapear errores en función del código de estado.
+///
+/// ### Métodos principales:
+/// - `post(...)`: Realiza una solicitud HTTP POST.
+/// - `get(...)`: Realiza una solicitud HTTP GET.
 struct HTTPManager: HTTPManagerProtocol {
     
     @Inject
     private var environmentValues: EnvironmentValuesProtocol
-    
-    @Inject
-    private var urlSession: URLSession
-    
+        
+    /// Ejecuta una solicitud HTTP de tipo POST.
+    ///
+    /// - Parameters:
+    ///   - endpoint: Objeto que representa el endpoint a consumir.
+    ///   - extraHeaders: Closure opcional para agregar headers personalizados.
+    ///   - requiresAuthentication: Indica si se requiere token de autenticación.
+    ///   - body: Modelo que representa el cuerpo del request.
+    ///   - requestErrorMapper: Closure opcional para transformar errores HTTP.
+    ///
+    /// - Returns: Un modelo decodificable del tipo `T`.
     func post<T>(
         endpoint: any EndpointProtocol,
         extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
@@ -35,6 +52,16 @@ struct HTTPManager: HTTPManagerProtocol {
         )
     }
 
+    /// Ejecuta una solicitud HTTP de tipo GET.
+    ///
+    /// - Parameters:
+    ///   - endpoint: Objeto que representa el endpoint a consumir.
+    ///   - extraHeaders: Closure opcional para agregar headers personalizados.
+    ///   - requiresAuthentication: Indica si se requiere token de autenticación.
+    ///   - queryParams: Parámetros opcionales a incluir en la URL.
+    ///   - requestErrorMapper: Closure opcional para transformar errores HTTP.
+    ///
+    /// - Returns: Un modelo decodificable del tipo `T`.
     func get<T>(
         endpoint: any EndpointProtocol,
         extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?,
@@ -53,6 +80,7 @@ struct HTTPManager: HTTPManagerProtocol {
         )
     }
     
+    /// Lógica central de solicitud HTTP reutilizable entre `GET` y `POST`.
     private func request<T: Decodable & Sendable>(
         endpoint: EndpointProtocol,
         method: HTTPMethod,
@@ -87,6 +115,7 @@ struct HTTPManager: HTTPManagerProtocol {
         }
     }
     
+    /// Ejecuta la solicitud real usando Alamofire y maneja la respuesta.
     private func performRequest<T: Decodable & Sendable>(
         service: String,
         method: HTTPMethod,
@@ -121,6 +150,7 @@ struct HTTPManager: HTTPManagerProtocol {
         }
     }
     
+    /// Construye la URL completa del servicio usando el endpoint y los valores del entorno.
     private func createServiceURL(_ endpoint: EndpointProtocol) -> String {
         let url = environmentValues.get(.baseURL)
             + "\(endpoint.api)\(CoreConstants.pathSeparator)\(endpoint.path)"
@@ -128,6 +158,7 @@ struct HTTPManager: HTTPManagerProtocol {
         return url.replacingOccurrences(of: "//", with: CoreConstants.pathSeparator)
     }
     
+    /// Genera un array de `HTTPHeader` listos para ser usados en una solicitud.
     private func createHeaders(
         requiresAuthentication: Bool,
         extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?
@@ -144,6 +175,7 @@ struct HTTPManager: HTTPManagerProtocol {
         return headers
     }
     
+    /// Construye un `HeadersBuilder`, permitiendo inyectar headers custom y auth.
     private func createHeadersBuilder(
         requiresAuthentication: Bool,
         extraHeaders: ((HeadersBuilder) async -> HeadersBuilder)?
