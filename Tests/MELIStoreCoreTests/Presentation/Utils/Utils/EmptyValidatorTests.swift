@@ -26,4 +26,12 @@ final class EmptyValidatorTests: XCTest {
         // Act / Assert
         XCTAssertThrowsError(try sut.validate(""))
     }
+    
+    func testFailureWithTrim1() throws {
+        // Arrange
+        let sut = EmptyValidator(message: "   ")
+
+        // Act / Assert
+        XCTAssertThrowsError(try sut.validate(""))
+    }
 }
