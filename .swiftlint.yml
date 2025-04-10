@@ -1,0 +1,45 @@
+# Rutas a incluir o excluir
+included:
+  - Sources
+  - Tests
+excluded:
+  - Carthage
+  - Pods
+  - .build
+  - Packages
+
+# Configuraciones generales
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - fatal_error_message
+  - force_unwrapping
+  - joined_default_parameter
+  - nimble_operator
+
+# Personalización de reglas
+line_length:
+  warning: 120
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+
+type_name:
+  min_length:
+    warning: 3
+  max_length:
+    warning: 40
+    error: 60
+
+identifier_name:
+  min_length:
+    warning: 2
+    error: 1
+  excluded:
+    - id
+    - x
+    - y
+    - i
+
+trailing_whitespace:
+  ignores_empty_lines: true
