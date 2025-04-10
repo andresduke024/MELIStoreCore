@@ -1,0 +1,38 @@
+name: Build and Test MELIStoreCore
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.1.0"
+          
+      - name: Get swift version
+        run: swift --version
+  
+      - name: Check Swift version
+        run: swift --version
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint
+        continue-on-error: true
+
+      - name: Build the package
+        run: swift build
+
+      - name: Run tests
+        run: swift test --enable-code-coverage
