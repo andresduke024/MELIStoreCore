@@ -34,7 +34,7 @@ public struct EmptyValidator: ValidatorProtocol {
     /// - Parameter text: Texto a validar.
     /// - Throws: `ValidationError` si el texto está vacío.
     public func validate(_ text: String) throws {
-        guard text.isEmpty else { return }
+        guard text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         
         throw ValidationError(
             message: message
