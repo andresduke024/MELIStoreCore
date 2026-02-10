@@ -13,7 +13,7 @@ let package = Package(
             targets: ["MELIStoreCore"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/andresduke024/swift-dependency-injector", .upToNextMinor(from: "2.0.0")),
+        .package(url: "https://github.com/andresduke024/swift-dependency-injector", .upToNextMajor(from: "2.0.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.10.0"))
     ],
     targets: [
